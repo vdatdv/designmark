@@ -8,7 +8,7 @@ if (!$session) {
     exit;
 }
 
-$pageTitle = 'Góp ý — DesignMark';
+$pageTitle = 'Quản lý góp ý — DesignMark';
 ?>
 <!DOCTYPE html>
 <html lang="vi">

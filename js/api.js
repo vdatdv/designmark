@@ -238,27 +238,61 @@ export async function validateImageFile(file) {
   });
 }
 
-async function getDashboard() {
-  return request('api/dashboard.php');
+async function getDashboard(params = {}) {
+  const query = new URLSearchParams(params).toString();
+  return request(`api/dashboard.php${query ? '?' + query : ''}`);
 }
 
-async function listProjects() {
-  return request('api/projects.php');
+async function listProjects(params = null) {
+  if (!params) {
+    return request('api/projects.php');
+  }
+  const query = new URLSearchParams(params).toString();
+  return request(`api/projects.php${query ? '?' + query : ''}`);
 }
 
 async function getProject(projectId) {
   return request(`api/projects.php?id=${encodeURIComponent(projectId)}`);
 }
 
-async function createProject({ name, description }) {
+async function createProject({ name, description, category }) {
   return request('api/projects.php?action=create', {
     method: 'POST',
-    body: JSON.stringify({ name, description })
+    body: JSON.stringify({ name, description, category })
   });
 }
 
-async function listScreens(projectId) {
-  return request(`api/screens.php?project_id=${encodeURIComponent(projectId)}`);
+async function updateProject(projectId, data) {
+  return request(`api/projects.php?id=${encodeURIComponent(projectId)}&action=update`, {
+    method: 'POST',
+    body: JSON.stringify(data)
+  });
+}
+
+async function deleteProject(projectId, permanent = false) {
+  return request(`api/projects.php?id=${encodeURIComponent(projectId)}&action=${permanent ? 'permanent_delete' : 'delete'}`, {
+    method: 'POST',
+    body: JSON.stringify({ permanent })
+  });
+}
+
+async function listTrashProjects() {
+  return request('api/projects.php?trash=1');
+}
+
+async function restoreProject(projectId) {
+  return request(`api/projects.php?id=${encodeURIComponent(projectId)}&action=restore`, {
+    method: 'POST'
+  });
+}
+
+
+async function listScreens(projectId, params = null) {
+  if (!params) {
+    return request(`api/screens.php?project_id=${encodeURIComponent(projectId)}`);
+  }
+  const query = new URLSearchParams({ project_id: projectId, ...params }).toString();
+  return request(`api/screens.php?${query}`);
 }
 
 async function getScreen(screenId) {
@@ -314,14 +348,34 @@ async function resolveImageUrl(imageKey) {
   return url;
 }
 
-async function listAnnotations(versionId) {
-  return request(`api/annotations.php?version_id=${encodeURIComponent(versionId)}`);
+async function listAnnotations(versionId, params = null) {
+  const query = new URLSearchParams({ version_id: versionId });
+  if (params && typeof params === 'object') {
+    query.set('paginated', '1');
+    for (const [k, v] of Object.entries(params)) {
+      if (v !== undefined && v !== null && v !== '') {
+        query.set(k, String(v));
+      }
+    }
+  }
+  return request(`api/annotations.php?${query.toString()}`);
+}
+
+async function getReplies(annotationId) {
+  return request(`api/annotations.php?id=${encodeURIComponent(annotationId)}&action=replies`);
 }
 
 async function createAnnotation(input) {
   return request('api/annotations.php?action=create', {
     method: 'POST',
     body: JSON.stringify(input)
+  });
+}
+
+async function deleteAnnotation(id) {
+  return request(`api/annotations.php?action=delete&id=${encodeURIComponent(id)}`, {
+    method: 'POST',
+    body: JSON.stringify({ id })
   });
 }
 
@@ -332,10 +386,54 @@ async function updateAnnotationBody(id, { body, revision, simulateConflict = fal
   });
 }
 
-async function addReply(id, body) {
+async function addReply(id, body, attachmentUrl = null) {
   return request(`api/annotations.php?id=${encodeURIComponent(id)}&action=reply`, {
     method: 'POST',
-    body: JSON.stringify({ body })
+    body: JSON.stringify({ body, attachmentUrl })
+  });
+}
+
+async function toggleReaction(annotationId, replyId = null, emoji = '👍') {
+  return request(`api/annotations.php?id=${encodeURIComponent(annotationId)}&action=react`, {
+    method: 'POST',
+    body: JSON.stringify({ replyId, emoji })
+  });
+}
+
+async function uploadAttachment(file) {
+  const data = new FormData();
+  data.append('file', file);
+  return request('api/annotations.php?action=upload_attachment', {
+    method: 'POST',
+    body: data
+  });
+}
+
+async function migrateUnresolvedAnnotations(targetVersionId, sourceVersionId = null) {
+  return request('api/annotations.php?action=migrate_unresolved', {
+    method: 'POST',
+    body: JSON.stringify({ targetVersionId, sourceVersionId })
+  });
+}
+
+async function reorderScreens(projectId, order) {
+  return request('api/screens.php?action=reorder', {
+    method: 'POST',
+    body: JSON.stringify({ projectId, order })
+  });
+}
+
+async function renameScreen(screenId, name) {
+  return request('api/screens.php?action=rename', {
+    method: 'POST',
+    body: JSON.stringify({ id: screenId, name })
+  });
+}
+
+async function deleteScreen(screenId) {
+  return request('api/screens.php?action=delete', {
+    method: 'POST',
+    body: JSON.stringify({ id: screenId })
   });
 }
 
@@ -357,18 +455,23 @@ async function setCheckNote(id, note) {
   });
 }
 
-async function listMembers(projectId) {
-  return request(`api/projects.php?id=${encodeURIComponent(projectId)}&action=members`);
+async function listMembers(projectId, params = null) {
+  if (!params) {
+    return request(`api/projects.php?id=${encodeURIComponent(projectId)}&action=members`);
+  }
+  const query = new URLSearchParams({ id: projectId, action: 'members', ...params }).toString();
+  return request(`api/projects.php?${query}`);
 }
 
-async function listInviteCandidates(projectId) {
-  return request(`api/projects.php?id=${encodeURIComponent(projectId)}&action=invite_candidates`);
+async function listInviteCandidates(projectId, query = '') {
+  const q = query ? `&q=${encodeURIComponent(query)}` : '';
+  return request(`api/projects.php?id=${encodeURIComponent(projectId)}&action=invite_candidates${q}`);
 }
 
-async function inviteMember(projectId, { userId, role }) {
+async function inviteMember(projectId, { userId, username, role }) {
   return request(`api/projects.php?id=${encodeURIComponent(projectId)}&action=invite`, {
     method: 'POST',
-    body: JSON.stringify({ userId, role })
+    body: JSON.stringify({ userId, username, role })
   });
 }
 
@@ -379,13 +482,43 @@ async function updateMemberRole(projectId, userId, role) {
   });
 }
 
-async function listActivities(projectId) {
-  return request(`api/projects.php?id=${encodeURIComponent(projectId)}&action=activities`);
+async function removeMember(projectId, userId) {
+  return request(`api/projects.php?id=${encodeURIComponent(projectId)}&action=remove_member`, {
+    method: 'POST',
+    body: JSON.stringify({ userId })
+  });
+}
+
+async function listActivities(projectId, params = null) {
+  if (!params) {
+    return request(`api/projects.php?id=${encodeURIComponent(projectId)}&action=activities`);
+  }
+  const query = new URLSearchParams({ id: projectId, action: 'activities', ...params }).toString();
+  return request(`api/projects.php?${query}`);
 }
 
 async function listFeedback(projectId) {
   const query = projectId ? `?project_id=${encodeURIComponent(projectId)}` : '';
   return request(`api/feedback.php${query}`);
+}
+
+async function listNotifications(params = {}) {
+  const query = new URLSearchParams(params).toString();
+  return request('api/notifications.php' + (query ? '?' + query : ''));
+}
+
+async function markNotificationRead(id) {
+  return request('api/notifications.php?action=mark_read', {
+    method: 'POST',
+    body: JSON.stringify({ id })
+  });
+}
+
+async function markAllNotificationsRead() {
+  return request('api/notifications.php?action=mark_all_read', {
+    method: 'POST',
+    body: JSON.stringify({})
+  });
 }
 
 async function getMyRole(projectId) {
@@ -415,8 +548,23 @@ async function rejectUser(userId) {
   });
 }
 
-async function listAllUsers() {
-  return request('api/auth.php?action=list_all_users');
+async function listAllUsers(params = null) {
+  if (!params) {
+    return request('api/auth.php?action=list_all_users');
+  }
+  const searchParams = new URLSearchParams();
+  searchParams.set('action', 'list_all_users');
+  searchParams.set('paginate', '1');
+  for (const [k, v] of Object.entries(params)) {
+    if (v !== undefined && v !== null && v !== '') {
+      searchParams.set(k, String(v));
+    }
+  }
+  return request(`api/auth.php?${searchParams.toString()}`);
+}
+
+async function getUserDetail(userId) {
+  return request(`api/auth.php?action=user_detail&userId=${encodeURIComponent(userId)}`);
 }
 
 async function updateSystemUserRole(userId, role) {
@@ -433,10 +581,10 @@ async function deleteSystemUser(userId) {
   });
 }
 
-async function adminCreateUser({ username, name, title, password, role }) {
+async function adminCreateUser({ username, name, email, password, systemRole, title, role }) {
   return request('api/auth.php?action=admin_create_user', {
     method: 'POST',
-    body: JSON.stringify({ username, name, title, password, role })
+    body: JSON.stringify({ username, name, email, password, systemRole, title, role })
   });
 }
 
@@ -447,11 +595,49 @@ async function resetUserPassword(userId, newPassword) {
   });
 }
 
+async function lockUser(userId, reason = '') {
+  return request('api/auth.php?action=lock_user', {
+    method: 'POST',
+    body: JSON.stringify({ userId, reason })
+  });
+}
+
+async function unlockUser(userId, reason = '') {
+  return request('api/auth.php?action=unlock_user', {
+    method: 'POST',
+    body: JSON.stringify({ userId, reason })
+  });
+}
+
+async function getUserStatusHistory(userId) {
+  return request(`api/auth.php?action=user_status_history&userId=${encodeURIComponent(userId)}`);
+}
+
+async function updateUser(userId, { name, email, title, role, systemRole }) {
+  return request('api/auth.php?action=update_user', {
+    method: 'POST',
+    body: JSON.stringify({ userId, name, email, title, role, systemRole })
+  });
+}
+
+async function changePassword({ currentPassword, newPassword, confirmPassword }) {
+  return request('api/auth.php?action=change_password', {
+    method: 'POST',
+    body: JSON.stringify({ currentPassword, newPassword, confirmPassword })
+  });
+}
+
 export const api = {
   getDashboard,
   listProjects,
+  listTrashProjects,
+  restoreProject,
   getProject,
   createProject,
+  updateProject,
+  deleteProject,
+  changePassword,
+
   listScreens,
   getScreen,
   listVersions,
@@ -461,9 +647,17 @@ export const api = {
   resolveImageUrl,
   validateImageFile,
   listAnnotations,
+  getReplies,
   createAnnotation,
+  deleteAnnotation,
   updateAnnotationBody,
+  toggleReaction,
   addReply,
+  uploadAttachment,
+  migrateUnresolvedAnnotations,
+  reorderScreens,
+  renameScreen,
+  deleteScreen,
   setAnnotationStatus,
   getStatusHistory,
   setCheckNote,
@@ -471,18 +665,27 @@ export const api = {
   listInviteCandidates,
   inviteMember,
   updateMemberRole,
+  removeMember,
   listActivities,
   listFeedback,
+  listNotifications,
+  markNotificationRead,
+  markAllNotificationsRead,
   getMyRole,
   resetDemo,
   getUnverifiedUsers,
   approveUser,
   rejectUser,
   listAllUsers,
+  getUserDetail,
   updateSystemUserRole,
   deleteSystemUser,
   adminCreateUser,
+  updateUser,
   resetUserPassword,
+  lockUser,
+  unlockUser,
+  getUserStatusHistory,
   isPreferLocal,
   setPreferLocal,
   checkDatabaseHealth

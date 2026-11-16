@@ -7,8 +7,8 @@ if (!$session) {
     header('Location: index.php?next=users.php');
     exit;
 }
-if ($session['role'] !== 'manager') {
-    header('Location: projects.php');
+if (($session['systemRole'] ?? '') !== 'admin') {
+    header('Location: dashboard.php');
     exit;
 }
 
@@ -30,6 +30,6 @@ $pageTitle = 'Quản lý tài khoản — DesignMark';
     </div>
   </div>
   <?php include __DIR__ . '/includes/footer.php'; ?>
-  <script type="module" src="js/users.js"></script>
+  <script type="module" src="js/users.js?v=<?= filemtime(__DIR__ . '/js/users.js') ?>"></script>
 </body>
 </html>

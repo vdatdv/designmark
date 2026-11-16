@@ -1,192 +1,137 @@
-# PHÁT TRIỂN PHẦN MỀM MÃ NGUỒN MỞ — BÀI THỰC HÀNH LAB 05 (POSTGRESQL)
+# PHÁT TRIỂN PHẦN MỀM MÃ NGUỒN MỞ — BÁO CÁO BÀI TẬP LỚN
 
 ## NHÓM 12 - CNTT 1810
 
-**Trường:** Đại học Đại Nam  
-**Môn học:** Phát triển phần mềm mã nguồn mở  
-**Đề tài 15:** DesignMark — Ứng dụng góp ý trực tiếp trên hình ảnh và bản thiết kế giao diện
+* **Trường:** Đại học Đại Nam  
+* **Khoa:** Công nghệ Thông tin  
+* **Học phần:** Phát triển phần mềm mã nguồn mở  
+* **Đề tài 15:** **Xây dựng ứng dụng góp ý trực tiếp trên hình ảnh và bản thiết kế giao diện**
 
-### Thành viên nhóm
+### Danh sách thành viên nhóm
 
-| STT | Họ và tên      | Mã sinh viên | Vai trò |
-| --- | -------------- | ------------ | --- |
-| 1   | Đỗ Vinh Đạt    | 1871020126   | Nhóm trưởng |
-| 2   | Vương Xuân Sơn | 1871020502   | Thành viên |
-| 3   | Nguyễn Phú Duy | 1871020196   | Thành viên |
+| STT | Họ và tên | Mã sinh viên | Vai trò | Phân công công việc |
+| :---: | :--- | :---: | :---: | :--- |
+| 1 | **Đỗ Vinh Đạt** | 1871020126 | Nhóm trưởng | Kiến trúc hệ thống, Backend PHP & CSDL PostgreSQL/SQLite, Canvas tọa độ & Kiểm thử |
+| 2 | **Vương Xuân Sơn** | 1871020502 | Thành viên | Giao diện Responsive, Quản lý dự án, So sánh phiên bản & Xuất báo cáo CSV |
+| 3 | **Nguyễn Phú Duy** | 1871020196 | Thành viên | Hệ thống xác thực, Phân quyền RBAC, Đóng gói mã nguồn & Tài liệu |
 
 ---
 
-# DesignMark
+# 🎨 DesignMark — Visual Design Review & Collaboration Platform
 
-DesignMark là ứng dụng web để góp ý trực tiếp trên ảnh và bản thiết kế giao diện. Người thiết kế tổ chức ảnh theo dự án, màn hình và phiên bản. Người duyệt đặt điểm hoặc khoanh vùng trên ảnh, viết nhận xét đúng vị trí, trả lời trong thread và theo dõi trạng thái xử lý. Hỗ trợ cơ sở dữ liệu Supabase PostgreSQL Cloud và CSDL cục bộ SQLite siêu tốc khi mạng yếu.
+**DesignMark** là hệ thống web mã nguồn mở phục vụ đánh giá, trao đổi và phản biện trực tiếp trên các bản vẽ thiết kế giao diện (UI/UX) và hình ảnh đồ họa chuẩn pixel.
 
-## Mục tiêu
+Hệ thống cho phép nhà thiết kế tổ chức theo **Dự án → Màn hình thiết kế → Các phiên bản (v1, v2...)**. Người duyệt có thể ghim điểm hoặc khoanh vùng chữ nhật chính xác trên ảnh để trao đổi theo luồng (thread), theo dõi tiến độ xử lý và so sánh trực quan giữa các phiên bản.
 
-- Góp ý theo tọa độ pixel của ảnh gốc, không lệch khi phóng to, thu nhỏ, cuộn hoặc đổi kích thước cửa sổ.
-- Giữ annotation đúng phiên bản ảnh. Góp ý của v1 không tự chuyển sang v2.
-- Quản lý vai trò demo: Quản lý, Góp ý, Chỉ xem.
-- So sánh hai phiên bản và xuất CSV an toàn với tiếng Việt.
+---
 
-## Công nghệ
+## 🚀 1. Hướng Dẫn Cài Đặt & Chạy Ứng Dụng
 
-- HTML5 semantic
-- CSS3, Grid và Flexbox
-- JavaScript ES6 modules
-- LocalStorage cho metadata JSON
-- IndexedDB cho ảnh người dùng tải lên
-- Ảnh mẫu là SVG tạo trong mã nguồn, không phụ thuộc tài nguyên ngoài
+### Yêu cầu môi trường
+* **PHP:** Phiên bản 8.0 trở lên (hỗ trợ `pdo_pgsql` và `pdo_sqlite`).
+* **Cơ sở dữ liệu:** PostgreSQL (kết nối Supabase Cloud) hoặc SQLite cục bộ (tự động đồng bộ kép).
+* **Trình duyệt:** Google Chrome, Firefox, Safari hoặc Microsoft Edge phiên bản mới nhất.
 
-Không dùng React, Vue, Angular, TypeScript, Tailwind, Bootstrap, bundler hay API bên ngoài.
+### Các bước khởi chạy cục bộ
 
-## Cấu trúc thư mục
+1. **Khởi động máy chủ phát triển PHP:**
+   Mở terminal tại thư mục gốc của dự án và chạy lệnh:
+   ```bash
+   php -S 0.0.0.0:8000
+   ```
+2. **Truy cập ứng dụng:**
+   Mở trình duyệt và truy cập: [http://localhost:8000](http://localhost:8000).
+   *Hệ thống sẽ tự động khởi tạo cơ sở dữ liệu và nạp dữ liệu mẫu hoàn chỉnh ở lần đầu tiên.*
 
-```text
-index.php         Đăng nhập
-register.php      Tạo tài khoản mới
-verify.php        Xác minh tài khoản Admin
-dashboard.php     Tổng quan dự án (Thống kê, góp ý cần xử lý, hoạt động)
-projects.php      Danh sách dự án (Tìm kiếm, lọc, quản lý dự án)
-project.php       Chi tiết dự án
-review.php        Góp ý trực tiếp trên ảnh
-compare.php       So sánh hai phiên bản
-feedback.php      Danh sách góp ý và xuất CSV
-includes/         Các thành phần giao diện dùng chung (head, footer, sidebar)
-api/db.php        Kết nối SQLite, schema và các hàm tiện ích
-api/dashboard.php API tổng quan dự án, thống kê và hoạt động
-api/seed.php      Khởi tạo dữ liệu mẫu
-api/svg_seeds.php Bộ dựng SVG mẫu trên máy chủ
-api/auth.php      Xác thực người dùng, đăng ký và xác minh Admin
-api/projects.php  API dự án, thành viên và hoạt động
-api/screens.php   API màn hình thiết kế và tải ảnh
-api/versions.php  API phiên bản ảnh
-api/annotations.php API góp ý, bình luận, trạng thái
-api/feedback.php  API danh sách góp ý
-api/image.php     Phục vụ ảnh mẫu SVG và ảnh tải lên
-api/reset.php     Khôi phục dữ liệu mẫu
-data/             Thư mục chứa database SQLite (database.sqlite)
-uploads/          Thư mục lưu trữ ảnh người dùng tải lên
-css/app.css       Design system
-js/app.js         Khởi tạo trang
-js/auth.js        Phiên đăng nhập, đăng ký và xác minh
-js/api.js         Tầng dữ liệu gọi PHP API
-js/coords.js      Quy đổi tọa độ
-js/ui.js          Thành phần giao diện
-js/projects.js    Danh sách dự án
-js/project.js     Chi tiết dự án
-js/review.js      Marker, điểm và vùng
-js/compare.js     So sánh phiên bản
-js/feedback.js    Bảng góp ý và CSV
-```
+3. **Chạy toàn bộ bộ kiểm thử tự động:**
+   ```bash
+   # Kiểm tra 5 phép thử bắt buộc của Đề tài 15:
+   php tests/test_topic_15_mandatory.php
 
-Giao diện gọi nghiệp vụ qua `js/api.js` tới các endpoint PHP tại `/api/`.
+   # Chạy bộ kiểm thử hợp nhất (All test suites):
+   php scripts/run_all_tests.php
+   ```
 
-## Chạy trên macOS / Linux / Windows
+---
 
-Mở Terminal tại thư mục dự án rồi chạy máy chủ PHP tích hợp sẵn:
+## 👥 2. Danh Sách Tài Khoản Thử Nghiệm (Demo Accounts)
 
+Hệ thống đã chuẩn bị sẵn 4 tài khoản với đầy đủ các vai trò phân quyền theo Đề tài 15:
+
+| Tên đăng nhập | Mật khẩu | Họ và tên | Vai trò trong hệ thống | Quyền hạn trong dự án mẫu |
+| :---: | :---: | :--- | :--- | :--- |
+| **`admin`** | `demo` | Quản trị viên Hệ thống | System Admin | Toàn quyền quản trị tài khoản, dự án, hệ thống |
+| **`an`** | `demo` | An Nguyễn | Quản lý (Owner/Manager) | Tạo dự án, tải màn hình, duyệt thành viên, phân quyền |
+| **`binh`** | `demo` | Bình Trần | Góp ý (Reviewer) | Ghim điểm, khoanh vùng, phản hồi, đổi trạng thái |
+| **`chi`** | `demo` | Chi Lê | Chỉ xem (Viewer) | Theo dõi bản vẽ & nhận xét (bị cấm tạo/sửa góp ý) |
+
+*(Mật khẩu demo cho tất cả tài khoản mẫu là: `demo`)*
+
+---
+
+## 🎬 3. Hướng Dẫn Hai Tình Huống Sử Dụng Demo (Mục 4 — Đề tài 15)
+
+Khi bảo vệ đồ án trước Giảng viên, nhóm thực hiện trình diễn 2 kịch bản trọng tâm sau:
+
+### Tình huống 1: Tạo dự án → Tải ảnh → Đánh dấu vùng cần sửa → Trao đổi phản hồi
+1. Đăng nhập bằng tài khoản **`an`** (Quản lý).
+2. Vào **Danh sách dự án** → Bấm **+ Tạo dự án mới**, nhập tên dự án (ví dụ: *Ứng dụng Mobile Banking*).
+3. Trong trang dự án, bấm **Tải màn hình** để tải lên file ảnh PNG/JPEG thiết kế v1.
+4. Mời tài khoản **`binh`** vào dự án với vai trò **Góp ý (Reviewer)**.
+5. Đăng xuất và đăng nhập bằng tài khoản **`binh`**.
+6. Mở màn hình vừa tạo → Chọn công cụ **Khoanh vùng (Rect)** hoặc **Đặt điểm (Pin)**.
+7. Đánh dấu lên vị trí nút bấm hoặc nội dung cần chỉnh sửa → Nhập nhận xét: *"Nút Đăng ký cần tăng độ tương phản đạt chuẩn WCAG"* → Bấm **Gửi góp ý**.
+8. Đăng nhập lại bằng tài khoản **`an`** → Mở góp ý của Bình → Trả lời phản hồi: *"Đã tiếp nhận và đang tiến hành cập nhật bản vẽ mới"*.
+
+### Tình huống 2: Tải phiên bản mới → So sánh cạnh nhau → Xác nhận xử lý → Xuất danh sách CSV
+1. Với tài khoản **`an`**, mở màn hình thiết kế đang có góp ý → Bấm **Tải phiên bản mới (v2)** tải lên bản vẽ đã sửa.
+2. Bấm nút **So sánh phiên bản** trên thanh công cụ (chuyển sang `compare.php`).
+3. Đặt hai phiên bản **v1** và **v2** cạnh nhau (chế độ **Side-by-side** hoặc vuốt **Swipe**).
+4. Đối chiếu vị trí nút bấm cũ ở v1 và nút bấm mới ở v2: nhận xét của v1 được giữ cố định theo v1, không bị nhảy lung tung sang v2.
+5. Nhấn vào góp ý → Đổi trạng thái sang **Đã xử lý (Resolved)**.
+6. Vào trang **Quản lý góp ý (`feedback.php`)** hoặc bấm **Danh sách góp ý** → Bấm **Xuất CSV** để tải về tệp bảng tính UTF-8 có đầy đủ: *STT, Tên dự án, Màn hình, Phiên bản, Nội dung, Tọa độ, Tác giả, Trạng thái, Thời gian*.
+
+---
+
+## 🎯 4. Kết Quả 5 Phép Thử Bắt Buộc (Mục 6 — Đề tài 15)
+
+Lệnh kiểm thử tự động:
 ```bash
-php -S localhost:8000
+php tests/test_topic_15_mandatory.php
 ```
 
-Truy cập [http://localhost:8000](http://localhost:8000).
+| STT | Phép thử bắt buộc theo đề bài | Kết quả thực tế | Chi tiết kiểm chứng |
+| :---: | :--- | :---: | :--- |
+| **1** | Hiển thị ảnh 1.000 × 500 ở kích thước 500 × 250: điểm mẫu (750; 150) vẫn nằm đúng vị trí; kiểm tra lề trống và phóng to | **[PASS] 100%** | Ảnh gốc `scr-signup` v1 (1000×500) có điểm mẫu (750, 150). Khi co về 500×250 tọa độ hiển thị là (375, 75). Khi có lề trống (letterbox) thuật toán tự động trừ lề; khi zoom 200% điểm hiển thị là (1500, 300). |
+| **2** | Lưu rồi mở lại một vùng chữ nhật: vị trí, kích thước vùng và nội dung nhận xét đúng với ảnh gốc | **[PASS] 100%** | Lưu vùng rect (x=180, y=90, w=320, h=160). Gọi API GET đọc lại từ database: vị trí, kích thước và body khớp 100%. |
+| **3** | Tải phiên bản có nút chuyển vị trí: nhận xét cũ chỉ thuộc ảnh cũ; hai bản và lịch sử vẫn tra cứu được | **[PASS] 100%** | Bản v1 có 25+ góp ý; bản v2 hoàn toàn độc lập (0 góp ý rò rỉ); lịch sử phiên bản `image_versions` lưu trữ đầy đủ. |
+| **4** | Người chỉ xem không tạo/sửa góp ý; thành viên dự án A không lấy ảnh hoặc nhận xét riêng của dự án B bằng URL | **[PASS] 100%** | Tài khoản `chi` (Viewer) gửi request POST tạo/sửa nhận xét bị chặn HTTP 403. Thành viên dự án A đọc dữ liệu dự án B qua API bị chặn HTTP 403 (Anti-IDOR). |
+| **5** | Hai người trả lời không làm mất một câu trả lời; sửa cùng nhận xét từ phiên bản cũ được báo xung đột; đóng rồi mở lại lưu đúng lịch sử | **[PASS] 100%** | Hai phản hồi gửi đồng thời được lưu nguyên vẹn; sửa nhận xét có revision cũ bị từ chối bằng HTTP 409 (Optimistic Locking); bảng `annotation_status_events` ghi nhận đầy đủ lịch sử đóng/mở. |
 
-Cơ sở dữ liệu SQLite (`data/database.sqlite`) sẽ tự động được khởi tạo và nạp dữ liệu mẫu ở lần chạy đầu tiên.
+---
 
-## Đăng ký và Xác minh tài khoản Admin
+## 🛠️ 5. Kiến Trúc & Công Nghệ Sử Dụng
 
-1. **Đăng ký tài khoản thông thường (`reviewer` hoặc `viewer`)**:
-   - Truy cập trang `register.php`.
-   - Nhập tên đăng nhập, họ tên, mật khẩu và chọn vai trò.
-   - Tài khoản được kích hoạt ngay và tự động đăng nhập.
+### 1. Phân định mã nguồn nhóm tự viết vs Thư viện sử dụng lại
+* **Mã nguồn nhóm tự phát triển 100%:**
+  * Toàn bộ kiến trúc Backend RESTful API bằng PHP thuần trong `api/` (`auth.php`, `projects.php`, `screens.php`, `annotations.php`, `feedback.php`, `dashboard.php`, `users.php`).
+  * Thuật toán quy đổi tọa độ chuẩn hóa và loại trừ lề trống trong `js/coords.js`.
+  * Bộ điều khiển canvas ghim điểm, khoanh vùng, zoom/pan và so sánh phiên bản trong `js/review.js` và `js/compare.js`.
+  * Bộ kiểm thử tự động hóa trong `tests/test_topic_15_mandatory.php`.
+* **Thư viện & Tài nguyên mở sử dụng lại:**
+  * Phông chữ: **Inter** & **Be Vietnam Pro** (Google Fonts, giấy phép SIL Open Font License).
+  * Bộ icon vector SVG: **Feather Icons / Lucide** (Giấy phép MIT).
+  * Trình khách kết nối cơ sở dữ liệu: `PDO` tích hợp sẵn trong PHP runtime.
 
-2. **Xác minh tài khoản Quản trị viên (Admin / `manager`)**:
-   - Khi chọn vai trò **Quản trị (Admin)** trên `register.php`, hệ thống áp dụng bảo mật xác minh:
-     - **Cách 1 - Kích hoạt tức thì**: Nhập mã bí mật Quản trị viên (Mã demo: `ADMIN2026`). Tài khoản sẽ được kích hoạt ngay lập tức.
-     - **Cách 2 - Xác minh OTP**: Nếu không nhập mã bí mật, hệ thống tạo tài khoản ở trạng thái chưa xác minh (`is_verified = 0`) và cấp mã OTP 6 số. Người dùng xác minh tại `verify.php?username=...` để kích hoạt tài khoản.
-     - **Cách 3 - Duyệt bởi Admin hiện tại**: Tài khoản Quản trị viên đã đăng nhập có thể thấy danh sách tài khoản Admin đang chờ xác minh trong tab **Thành viên** của dự án và bấm **Duyệt Admin**.
-   - Tài khoản Admin chưa xác minh sẽ bị chặn đăng nhập và được hướng dẫn tới trang `verify.php`.
+### 2. An toàn dữ liệu & Bảo mật
+* Chống **SQL Injection:** 100% truy vấn cơ sở dữ liệu sử dụng PDO Prepared Statements với tham số ràng buộc (`:param`).
+* Chống **XSS (Cross-Site Scripting):** Mọi nội dung nhận xét của người dùng được gán an toàn qua thuộc tính `textContent` hoặc DOM element builder `el()`, tuyệt đối không dùng `innerHTML` không được làm sạch.
+* Chống **IDOR & Vi phạm quyền:** Mọi thao tác đều kiểm tra quyền hạn thành viên qua hàm `require_member($pdo, $projectId, $allowedRoles)` ở cấp độ máy chủ.
+* Chống **Xung đột ghi đè đồng thời:** Sử dụng cơ chế khóa lạc quan (Optimistic Concurrency Control) với số hiệu phiên bản `revision`, trả về HTTP 409 Conflict khi phát hiện sửa đè.
 
-## Tài khoản mẫu
+---
 
-Mật khẩu demo là bất kỳ chuỗi không rỗng (hoặc `demo`).
+## 📄 6. Giấy Phép & Bản Quyền
 
-| Tài khoản | Vai trò | Trạng thái |
-| --- | --- | --- |
-| an | Quản lý (Admin) | Đã xác minh |
-| binh | Góp ý | Đã xác minh |
-| chi | Chỉ xem | Đã xác minh |
-
-Có thể bấm tài khoản mẫu ở trang đăng nhập, hoặc dùng nút chuyển tài khoản ở cuối sidebar sau khi đăng nhập.
-
-## Tải ảnh
-
-1. Đăng nhập bằng `an`.
-2. Mở một dự án.
-3. Bấm **Tải ảnh**, nhập tên màn hình và chọn PNG hoặc JPEG tối đa 10 MB.
-4. Hệ thống kiểm tra MIME type, magic bytes, khả năng đọc ảnh và kích thước gốc.
-5. **Tải phiên bản mới** tạo version tiếp theo, giữ ảnh cũ và không copy góp ý.
-
-Ảnh tải lên được lưu trữ trên máy chủ trong thư mục `uploads/`. Metadata và các góp ý được lưu trong cơ sở dữ liệu SQLite (`data/database.sqlite`). Nếu lưu thất bại, ứng dụng báo lỗi và không hiện thông báo thành công.
-
-## Đặt điểm và khoanh vùng
-
-1. Mở màn hình **Đăng ký tài khoản** trong dự án **Cửa hàng DesignMark**.
-2. Chọn phiên bản **v1**.
-3. Góp ý số 1 nằm tại `x = 750`, `y = 150`, trên nút **Đăng ký**.
-4. Chọn **v2**: nút đã chuyển xuống cuối form và marker của v1 không còn.
-5. Chọn công cụ **Đặt điểm**, nhấp lên ảnh, nhập nhận xét rồi bấm **Gửi**.
-6. Chọn **Khoanh vùng**, kéo để tạo hình chữ nhật. Kéo theo mọi hướng đều được.
-7. Nếu khoảng kéo dưới 4 pixel hiển thị, thao tác được tính là đặt điểm.
-8. **Hủy** hoặc phím Escape bỏ marker tạm và không lưu.
-
-Người chỉ xem không thấy công cụ tạo góp ý. Có thể dùng **Nhập tọa độ** hoặc phím mũi tên và Enter khi vùng ảnh được focus.
-
-## Kiểm tra zoom
-
-Dùng **Phóng to**, **Thu nhỏ** và **Vừa khung**. Marker dùng phần trăm của ảnh, dữ liệu lưu bằng pixel ảnh gốc. Vị trí không đổi khi zoom, cuộn, resize hoặc khi khung chứa rộng hơn ảnh.
-
-## Phiên bản và so sánh
-
-Dropdown phiên bản chỉ hiện annotation của version đó. Banner xuất hiện khi xem bản cũ.
-
-Trang **So sánh** có hai khung độc lập. Công tắc **Thu phóng đồng bộ** áp cùng mức zoom cho cả hai bên. Ghi chú **Kiểm tra sau sửa** và trạng thái được lưu qua API mock. Annotation không bị sao chép giữa hai phiên bản.
-
-## Xuất CSV
-
-Trang **Góp ý** lọc theo trạng thái và từ khóa. **Xuất CSV** chỉ xuất các dòng đang lọc, mã hóa UTF-8 có BOM, escape dấu phẩy, nháy kép và xuống dòng. Ô bắt đầu bằng `=`, `+`, `-`, `@`, kể cả khi có khoảng trắng phía trước, được thêm dấu nháy đơn.
-
-## Dữ liệu demo
-
-Lần đầu mở ứng dụng sẽ tạo:
-
-- 2 dự án
-- 3 tài khoản
-- 6 màn hình, mỗi màn hình 2 phiên bản
-- đúng 20 góp ý, gồm điểm, vùng, đã xử lý, chưa xử lý, nhiều tác giả, trả lời và lịch sử trạng thái
-
-Refresh không ghi đè dữ liệu đã sửa. Nếu JSON lưu bị hỏng, ứng dụng khôi phục dữ liệu mẫu và báo lỗi. Nút **Khôi phục dữ liệu mẫu** ở sidebar xóa dữ liệu demo trên trình duyệt này, gồm cả ảnh đã tải lên.
-
-## API mock và hướng PHP / PostgreSQL
-
-`js/api.js` là ranh giới dữ liệu. Mỗi hàm bất đồng bộ có thể được thay bằng `fetch()` tới PHP mà không viết lại giao diện.
-
-Mô hình gợi ý cho PostgreSQL:
-
-- users
-- projects
-- project_members
-- design_screens
-- image_versions
-- annotations
-- annotation_replies
-- annotation_status_events
-- activities
-
-Ảnh nên lưu ở object storage hoặc thư mục server, không nhét blob vào LocalStorage. Server phải tự kiểm tra phiên, vai trò và dữ liệu đầu vào. Tọa độ tiếp tục lưu theo pixel ảnh gốc cùng `imageVersionId`, `originalWidth` và `originalHeight`.
-
-## Giới hạn của bản demo
-
-- Không có backend, email mời hay mật khẩu thật.
-- Quyền có thể bị sửa nếu người dùng can thiệp LocalStorage.
-- Không có cộng tác thời gian thực ngoài nút mô phỏng xung đột.
-- Không có công cụ vẽ đè hoặc sửa pixel ảnh.
+Dự án được phát hành theo giấy phép mã nguồn mở **MIT License**. Chi tiết xem tại tệp [LICENSE](file:///Users/dovinhdat/Documents/designmark-web-application-development/LICENSE).  
+Quy định đóng góp mã nguồn xem tại tệp [CONTRIBUTING.md](file:///Users/dovinhdat/Documents/designmark-web-application-development/CONTRIBUTING.md).

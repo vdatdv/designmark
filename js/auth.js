@@ -21,7 +21,10 @@ const ALLOWED_NEXT = new Set([
 ]);
 
 export const ROLE_LABELS = {
+  admin: 'Quản trị viên',
+  admin_observer: 'Giám sát hệ thống',
   manager: 'Quản lý',
+  commenter: 'Góp ý',
   reviewer: 'Góp ý',
   viewer: 'Chỉ xem'
 };
@@ -45,6 +48,8 @@ export function getSession() {
           username: data.username,
           name: data.name || data.username,
           role: data.role || 'viewer',
+          systemRole: data.systemRole || (data.username === 'admin' ? 'admin' : 'user'),
+          status: data.status || 'active',
           title: data.title || '',
           color: data.color || '#4F46E5',
           isVerified: data.isVerified !== undefined ? Number(data.isVerified) : 1,
@@ -62,6 +67,8 @@ export function getSession() {
       username: s.username,
       name: s.name || s.username,
       role: s.role || 'viewer',
+      systemRole: s.systemRole || (s.username === 'admin' ? 'admin' : 'user'),
+      status: s.status || 'active',
       title: s.title || '',
       color: s.color || '#4F46E5',
       isVerified: s.isVerified !== undefined ? Number(s.isVerified) : 1,
@@ -82,6 +89,8 @@ export function setSession(user, remember) {
     username: user.username,
     name: user.name || user.username,
     role: user.role || 'viewer',
+    systemRole: user.systemRole || (user.username === 'admin' ? 'admin' : 'user'),
+    status: user.status || 'active',
     title: user.title || '',
     color: user.color || '#4F46E5',
     isVerified: user.isVerified !== undefined ? Number(user.isVerified) : (user.is_verified !== undefined ? Number(user.is_verified) : 1),
@@ -123,10 +132,12 @@ export function requireAuth() {
   return session;
 }
 
-export function redirectAfterLogin() {
+export function redirectAfterLogin(user) {
+  const session = user || getSession();
   const params = new URLSearchParams(location.search);
   const next = params.get('next') || '';
   const file = next.split('?')[0];
+
   if (ALLOWED_NEXT.has(file) && !next.includes('://') && !next.startsWith('//')) {
     location.href = next;
     return;
@@ -192,17 +203,21 @@ export async function switchAccount(username) {
   } catch (ignore) {}
 }
 
-export async function registerAccount({ username, name, password, title }) {
+export async function registerAccount({ username, name, email, password, confirm_password, confirmPassword, title }) {
+  const confirm = confirm_password || confirmPassword || password;
   const res = await fetch('api/auth.php?action=register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, name, password, title })
+    body: JSON.stringify({ username, name, email, password, confirm_password: confirm, title })
   });
   const data = await res.json();
   if (!res.ok) {
     const error = new Error(data.error || 'Đăng ký không thành công.');
     error.code = data.code || 'REGISTRATION_ERROR';
     throw error;
+  }
+  if (data.userId) {
+    setSession(data, true);
   }
   return data;
 }
