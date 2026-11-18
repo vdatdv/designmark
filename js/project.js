@@ -732,10 +732,8 @@ async function renderScreens(panel, project) {
   let viewMode = localStorage.getItem('dm_screens_view_mode') || 'grid'; // 'grid' | 'list'
 
   let screensPage = parseInt(urlParams.get('page') || '1', 10);
-  let defaultLimit = viewMode === 'grid' ? 9 : 10;
-  let screensLimit = parseInt(urlParams.get('limit') || String(defaultLimit), 10);
+  const screensLimit = 10;
   if (isNaN(screensPage) || screensPage < 1) screensPage = 1;
-  if (isNaN(screensLimit) || screensLimit < 1) screensLimit = defaultLimit;
 
   function updateUrlState() {
     const url = new URL(location.href);
@@ -744,12 +742,7 @@ async function renderScreens(panel, project) {
     } else {
       url.searchParams.delete('page');
     }
-    const defLimit = viewMode === 'grid' ? 9 : 10;
-    if (screensLimit !== defLimit) {
-      url.searchParams.set('limit', screensLimit);
-    } else {
-      url.searchParams.delete('limit');
-    }
+    url.searchParams.delete('limit');
     if (statusFilter && statusFilter !== 'all') {
       url.searchParams.set('status', statusFilter);
     } else {
@@ -874,21 +867,15 @@ async function renderScreens(panel, project) {
         currentPage: screensPage,
         pageSize: screensLimit,
         totalItems: totalScreens,
-        showPageSizeSelect: true,
-        pageSizeOptions: viewMode === 'grid' ? [9, 12, 24] : [10, 20, 50],
-        showInfo: true,
+        showPageSizeSelect: false,
+        showInfo: false,
         isCentered: true,
-        itemLabel: 'màn hình',
-        isStandalone: viewMode === 'grid',
+        alwaysShow: true,
+        isStandalone: true,
         onPageChange: (newPage) => {
           screensPage = newPage;
           updateViews();
           screensContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        },
-        onPageSizeChange: (newLimit) => {
-          screensLimit = newLimit;
-          screensPage = 1;
-          updateViews();
         }
       });
 
@@ -1026,7 +1013,6 @@ async function renderScreens(panel, project) {
     'aria-label': 'Chế độ xem lưới',
     onclick: () => {
       viewMode = 'grid';
-      screensLimit = 9;
       screensPage = 1;
       localStorage.setItem('dm_screens_view_mode', 'grid');
       gridViewBtn.classList.add('is-active');
@@ -1042,7 +1028,6 @@ async function renderScreens(panel, project) {
     'aria-label': 'Chế độ xem danh sách',
     onclick: () => {
       viewMode = 'list';
-      screensLimit = 10;
       screensPage = 1;
       localStorage.setItem('dm_screens_view_mode', 'list');
       listViewBtn.classList.add('is-active');

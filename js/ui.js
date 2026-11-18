@@ -1300,14 +1300,15 @@ export function renderPagination({
   isCentered = false,
   itemLabel = 'mục',
   isStandalone = false,
+  alwaysShow = false,
   onPageChange,
   onPageSizeChange
 }) {
-  if (totalItems <= 0) return null;
+  if (totalItems <= 0 && !alwaysShow) return null;
   const totalPages = Math.ceil(totalItems / pageSize) || 1;
 
-  // Không hiển thị phân trang dư thừa khi chỉ có một trang
-  if (totalPages <= 1 && (!showPageSizeSelect || totalItems <= (pageSizeOptions[0] || pageSize))) {
+  // Không hiển thị phân trang dư thừa khi chỉ có một trang trừ khi có alwaysShow
+  if (!alwaysShow && totalPages <= 1 && (!showPageSizeSelect || totalItems <= (pageSizeOptions[0] || pageSize))) {
     return null;
   }
 
