@@ -36,7 +36,7 @@ $pageTitle = 'Góp ý — DesignMark';
               <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h7v12H4zM13 6h7v12h-7z"/></svg>
               <span>So sánh</span>
             </a>
-            <button type="button" id="migrate-btn" class="btn btn-secondary btn-sm" title="Chuyển góp ý chưa xong từ bản cũ">Chuyển góp ý cũ</button>
+            <button type="button" id="migrate-btn" class="btn btn-secondary btn-sm" title="Chuyển góp ý chưa xong từ bản cũ">Chuyển góp ý</button>
             <button type="button" id="export-annotated-btn" class="btn btn-secondary btn-sm" title="Tải ảnh kèm các ghim và vùng chú thích">
               <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v10M8 11l4 4 4-4M5 19h14"/></svg>
               <span>Xuất ảnh</span>
@@ -55,15 +55,15 @@ $pageTitle = 'Góp ý — DesignMark';
             <div class="tool-segmented-group">
               <button type="button" id="tool-select" class="tool-btn is-active" data-testid="tool-select" aria-pressed="true" title="Chọn và xem góp ý (Phím V hoặc Esc)">
                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 4 6.5 15 1.8-5.7L19 11.5 5 4Z"/></svg>
-                <span>Chọn (V)</span>
+                <span>Chọn</span>
               </button>
               <button type="button" id="tool-point" class="tool-btn" data-testid="tool-point" aria-pressed="false" title="Đặt điểm đánh dấu (Phím C hoặc P)">
                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s6-5.1 6-10a6 6 0 1 0-12 0c0 4.9 6 10 6 10Z"/><circle cx="12" cy="11" r="1.6" fill="currentColor"/></svg>
-                <span>Đặt điểm (C)</span>
+                <span>Điểm (C)</span>
               </button>
               <button type="button" id="tool-rectangle" class="tool-btn" data-testid="tool-rectangle" aria-pressed="false" title="Khoanh vùng chữ nhật (Phím R)">
                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="2"/></svg>
-                <span>Khoanh vùng (R)</span>
+                <span>Vùng (R)</span>
               </button>
               <button type="button" id="tool-arrow" class="tool-btn" data-testid="tool-arrow" aria-pressed="false" title="Vẽ mũi tên chỉ dẫn">
                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="19" x2="19" y2="5"/><polyline points="9 5 19 5 19 15"/></svg>
@@ -80,7 +80,7 @@ $pageTitle = 'Góp ý — DesignMark';
             </button>
             <button type="button" id="toggle-markers-btn" class="btn btn-secondary btn-sm" title="Ẩn/Hiện điểm đánh dấu (Phím tắt: H)">
               <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-              <span id="toggle-markers-label">Ẩn/Hiện điểm</span>
+              <span id="toggle-markers-label">Ẩn/Hiện</span>
             </button>
           </div>
         </div>
