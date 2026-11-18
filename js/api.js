@@ -110,7 +110,12 @@ async function request(url, options = {}) {
 
   const makeHeaders = (forceLocal = false) => {
     const h = new Headers(options.headers || {});
-    h.set('X-User-Id', session.userId);
+    if (session.userId) {
+      h.set('X-User-Id', session.userId);
+    }
+    if (session.sessionToken) {
+      h.set('Authorization', `Bearer ${session.sessionToken}`);
+    }
     if (preferLocal || forceLocal) {
       h.set('X-Prefer-Local', '1');
     }

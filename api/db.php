@@ -363,6 +363,19 @@ function get_current_user_session(PDO $pdo) {
             $userId = $authHeader;
         }
     }
+    if (!$userId) {
+        $auth = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+        if (!$auth && function_exists('getallheaders')) {
+            $headers = getallheaders();
+            $auth = $headers['Authorization'] ?? $headers['authorization'] ?? '';
+        }
+        if (str_starts_with($auth, 'Bearer ')) {
+            $token = trim(substr($auth, 7));
+            if ($token && $token === session_id() && isset($_SESSION['user_id'])) {
+                $userId = $_SESSION['user_id'];
+            }
+        }
+    }
     if (!$userId) return null;
     $stmt = $pdo->prepare("SELECT * FROM users WHERE id = :id OR username = :uname");
     $stmt->execute([':id' => $userId, ':uname' => $userId]);
@@ -393,7 +406,8 @@ function get_current_user_session(PDO $pdo) {
         'title' => $user['title'],
         'color' => $user['color'],
         'isVerified' => (int)($user['is_verified'] ?? 1),
-        'remember' => true
+        'remember' => true,
+        'sessionToken' => session_id() ?: ('tok_' . md5($user['id'] . microtime()))
     ];
 }
 

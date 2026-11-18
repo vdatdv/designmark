@@ -53,13 +53,14 @@ export function getSession() {
           title: data.title || '',
           color: data.color || '#4F46E5',
           isVerified: data.isVerified !== undefined ? Number(data.isVerified) : 1,
-          remember: Boolean(data.remember)
+          remember: Boolean(data.remember),
+          sessionToken: data.sessionToken || ''
         };
       }
     } catch (err) {}
   }
 
-  // Fallback to PHP injected session if present
+  // Fallback to backend injected session if present
   if (typeof window !== 'undefined' && window.DESIGNMARK_SESSION && window.DESIGNMARK_SESSION.userId) {
     const s = window.DESIGNMARK_SESSION;
     const sessionObj = {
@@ -72,7 +73,8 @@ export function getSession() {
       title: s.title || '',
       color: s.color || '#4F46E5',
       isVerified: s.isVerified !== undefined ? Number(s.isVerified) : 1,
-      remember: true
+      remember: true,
+      sessionToken: s.sessionToken || ''
     };
     try {
       sessionStorage.setItem(SESSION_KEY, JSON.stringify(sessionObj));
@@ -94,7 +96,8 @@ export function setSession(user, remember) {
     title: user.title || '',
     color: user.color || '#4F46E5',
     isVerified: user.isVerified !== undefined ? Number(user.isVerified) : (user.is_verified !== undefined ? Number(user.is_verified) : 1),
-    remember: Boolean(remember)
+    remember: Boolean(remember),
+    sessionToken: user.sessionToken || ''
   });
   try {
     if (remember) {
@@ -181,18 +184,29 @@ export async function login(username, password, remember) {
 }
 
 export async function logout() {
+  const session = getSession();
+  const headers = {};
+  if (session && session.sessionToken) {
+    headers['Authorization'] = `Bearer ${session.sessionToken}`;
+  }
   try {
-    await fetch('api/auth.php?action=logout', { method: 'POST' });
+    await fetch('api/auth.php?action=logout', { method: 'POST', headers, credentials: 'same-origin' });
   } catch (ignore) {}
   clearSession();
   location.href = 'index.php';
 }
 
 export async function switchAccount(username) {
+  const session = getSession();
+  const headers = { 'Content-Type': 'application/json' };
+  if (session && session.sessionToken) {
+    headers['Authorization'] = `Bearer ${session.sessionToken}`;
+  }
   try {
     const res = await fetch('api/auth.php?action=switch', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
+      credentials: 'same-origin',
       body: JSON.stringify({ username })
     });
     if (res.ok) {

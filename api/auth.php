@@ -115,6 +115,7 @@ if ($action === 'register' && $method === 'POST') {
         'systemRole' => $systemRole,
         'status' => $status,
         'role' => $role,
+        'sessionToken' => session_id() ?: ('tok_' . md5($userId . microtime())),
         'message' => 'Đăng ký tài khoản thành công! Bạn có thể sử dụng DesignMark ngay bây giờ.'
     ], 201);
 }
@@ -169,7 +170,8 @@ if ($action === 'login' && $method === 'POST') {
         'title' => $user['title'] ?? 'Thành viên (Chỉ xem)',
         'color' => $user['color'] ?? '#4F46E5',
         'isVerified' => (int)($user['is_verified'] ?? 1),
-        'remember' => $remember
+        'remember' => $remember,
+        'sessionToken' => session_id() ?: ('tok_' . md5($user['id'] . microtime()))
     ]);
 }
 
@@ -891,7 +893,8 @@ if ($action === 'switch' && $method === 'POST') {
             'role' => $user['role'] ?? 'user',
             'title' => $user['title'] ?? 'Thành viên (Chỉ xem)',
             'color' => $user['color'] ?? '#4F46E5',
-            'isVerified' => (int)($user['is_verified'] ?? 1)
+            'isVerified' => (int)($user['is_verified'] ?? 1),
+            'sessionToken' => session_id() ?: ('tok_' . md5($user['id'] . microtime()))
         ]);
     }
     json_error('Không tìm thấy người dùng để chuyển đổi.', 'NOT_FOUND', 404);
