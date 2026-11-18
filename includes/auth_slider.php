@@ -668,7 +668,16 @@
     if (signInBtn) signInBtn.addEventListener('click', switchToSignIn);
     if (mobileToSignup) mobileToSignup.addEventListener('click', switchToSignUp);
     if (mobileToSignin) mobileToSignin.addEventListener('click', switchToSignIn);
-    if (successToSignin) successToSignin.addEventListener('click', switchToSignIn);
+    if (successToSignin) {
+      successToSignin.addEventListener('click', () => {
+        switchToSignIn();
+        if (regUsernameInput && regUsernameInput.value) {
+          usernameInput.value = regUsernameInput.value.trim();
+          passwordInput.value = '';
+          passwordInput.focus();
+        }
+      });
+    }
 
     // Login logic
     const loginForm = document.getElementById('login-form');
@@ -703,10 +712,10 @@
         redirectAfterLogin(user);
       } catch (err) {
         if (err.code === 'ACCOUNT_LOCKED') {
-          loginError.innerHTML = \`<div class="locked-account-box" style="background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 8px; padding: 10px 12px; color: #b91c1c; font-size: 0.85rem; line-height: 1.45; text-align: left; margin-top: 6px;">
-            <strong style="display: block; margin-bottom: 3px; font-weight: 600;">Tài khoản đã bị khóa</strong>
-            \${err.message || 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ Quản trị viên để được hỗ trợ.'}
-          </div>\`;
+          loginError.innerHTML = '<div class="locked-account-box" style="background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 8px; padding: 10px 12px; color: #b91c1c; font-size: 0.85rem; line-height: 1.45; text-align: left; margin-top: 6px;">' +
+            '<strong style="display: block; margin-bottom: 3px; font-weight: 600;">Tài khoản đã bị khóa</strong>' +
+            (err.message || 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ Quản trị viên để được hỗ trợ.') +
+          '</div>';
         } else {
           loginError.textContent = err.message || 'Tên đăng nhập hoặc mật khẩu không chính xác.';
         }
@@ -789,7 +798,7 @@
         regUsernameInput.focus();
         return;
       }
-      if (!/^[a-zA-Z0-9_\\-.]{3,30}$/.test(username)) {
+      if (!/^[a-zA-Z0-9_.-]{3,30}$/.test(username)) {
         regError.textContent = 'Tên đăng nhập từ 3 đến 30 ký tự, chỉ gồm chữ cái, số, gạch dưới hoặc gạch ngang.';
         regUsernameInput.focus();
         return;
@@ -804,7 +813,7 @@
         regEmailInput.focus();
         return;
       }
-      if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         regError.textContent = 'Địa chỉ email không đúng định dạng (ví dụ: user@example.com).';
         regEmailInput.focus();
         return;
@@ -834,10 +843,7 @@
 
         regForm.style.display = 'none';
         if (successMsg) {
-          successMsg.innerHTML = \`
-            Tài khoản <strong>\${data.username || username}</strong> (\${name}) đã được tạo thành công.<br>
-            Bạn có thể vào bảng điều khiển để bắt đầu làm việc ngay.
-          \`;
+          successMsg.innerHTML = 'Tài khoản <strong>' + (data.username || username) + '</strong> (' + name + ') đã được tạo thành công.<br>Bạn có thể vào bảng điều khiển để bắt đầu làm việc ngay.';
         }
         successCard.style.display = 'block';
         toast('Đăng ký tài khoản thành công!', 'success');
