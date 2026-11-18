@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: designmark
+    runtime: docker
+    plan: free
+    region: singapore
+    envVars:
+      - key: SUPABASE_DB_HOST
+        value: aws-0-ap-southeast-1.pooler.supabase.com
+      - key: SUPABASE_DB_PORT
+        value: "5432"
+      - key: SUPABASE_DB_USER
+        value: postgres.qpdsjaxilorovzboexrq
+      - key: SUPABASE_DB_PASS
+        value: "@Vinhdat123"
+      - key: SUPABASE_DB_NAME
+        value: postgres
+      - key: DATABASE_URL
+        value: postgresql://postgres.qpdsjaxilorovzboexrq:@Vinhdat123@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        value: https://qpdsjaxilorovzboexrq.supabase.co
+      - key: NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+        value: sb_publishable_Mtwl6FEpvwbftGu-MXivTg_p_MS9xbn

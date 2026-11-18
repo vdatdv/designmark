@@ -1,0 +1,19 @@
+# DesignMark Apache Configuration for Production
+
+DirectoryIndex index.php index.html
+
+# Chặn truy cập trực tiếp vào các file nhạy cảm
+<FilesMatch "^\.env|\.(sql|sqlite|sh|log|bak|md|json)$">
+    Require all denied
+</FilesMatch>
+
+# Không cho phép duyệt thư mục tự do
+Options -Indexes
+
+# Bật Rewrite Engine
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Chặn thư mục ẩn .git
+    RewriteRule ^\.git - [F,L]
+</IfModule>

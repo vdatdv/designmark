@@ -1,0 +1,9 @@
+.git
+.github
+.agents
+.DS_Store
+node_modules
+tests
+scripts
+*.log
+.env.local
