@@ -197,19 +197,38 @@ export function setBusy(button, busy, busyLabel) {
   }
 }
 
-export function toast(message, type = 'info') {
+export function toast(message, type = 'info', options = {}) {
   const root = document.getElementById('toast-root');
   if (!root) return;
-  const node = el('div', { class: `toast toast-${type}`, role: type === 'error' ? 'alert' : 'status' }, [
-    icon(type === 'success' ? 'check' : type === 'error' ? 'alert' : 'message'),
-    el('span', { text: message })
+  const { key = '', icon: customIcon = '', duration = 3000 } = options || {};
+  if (key) {
+    root.querySelectorAll(`[data-toast-key="${key}"]`).forEach((existing) => existing.remove());
+  }
+  const iconName = customIcon || (type === 'success' ? 'check' : type === 'error' ? 'alert' : 'message');
+  const dismiss = (node) => {
+    if (!node || node.dataset.closing === '1') return;
+    node.dataset.closing = '1';
+    node.classList.remove('is-in');
+    window.setTimeout(() => node.remove(), 220);
+  };
+  const closeBtn = el('button', {
+    type: 'button',
+    class: 'toast-close',
+    'aria-label': 'Đóng thông báo',
+    onclick: () => dismiss(node)
+  }, [icon('close')]);
+  const node = el('div', {
+    class: `toast toast-${type}`,
+    role: type === 'error' ? 'alert' : 'status',
+    dataset: key ? { toastKey: key } : undefined
+  }, [
+    el('span', { class: 'toast-icon', 'aria-hidden': 'true' }, [icon(iconName)]),
+    el('span', { class: 'toast-text', text: message }),
+    closeBtn
   ]);
   root.append(node);
   requestAnimationFrame(() => node.classList.add('is-in'));
-  window.setTimeout(() => {
-    node.classList.remove('is-in');
-    window.setTimeout(() => node.remove(), 220);
-  }, 3200);
+  window.setTimeout(() => dismiss(node), duration);
   announce(message);
 }
 
@@ -809,7 +828,11 @@ export function renderThemeToggle() {
         console.warn('Cannot persist theme', e);
       }
       updateState(next);
-      toast(next === 'dark' ? 'Đã bật giao diện tối (Dark Mode)' : 'Đã bật giao diện sáng (Light Mode)', 'info');
+      toast(
+        next === 'dark' ? 'Đã bật giao diện tối' : 'Đã bật giao diện sáng',
+        'info',
+        { key: 'theme', icon: next === 'dark' ? 'moon' : 'sun', duration: 2200 }
+      );
       window.dispatchEvent(new CustomEvent('dm:theme-changed', { detail: { theme: next } }));
     }
   });

@@ -8871,3 +8871,225 @@ select.projects-toolbar-select {
   border-color: #2e3547 !important;
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45) !important;
 }
+
+/* ==========================================================================
+   TOAST & DARK MODE NOTIFICATION POLISH
+   ========================================================================== */
+.toast-root {
+  right: 20px !important;
+  bottom: 20px !important;
+  z-index: 2200 !important;
+  width: min(360px, calc(100vw - 32px)) !important;
+  gap: 10px !important;
+  pointer-events: none !important;
+}
+
+.toast {
+  pointer-events: auto !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 10px 12px !important;
+  border-radius: 12px !important;
+  background: var(--surface-raised, #ffffff) !important;
+  color: var(--heading, #15161c) !important;
+  border: 1px solid var(--border, #d9dcd8) !important;
+  box-shadow: 0 12px 30px rgba(15, 17, 24, 0.14) !important;
+  font-family: var(--font) !important;
+  font-size: 13.5px !important;
+  font-weight: 500 !important;
+  line-height: 1.4 !important;
+}
+
+.toast-icon {
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 8px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  background: var(--primary-light, rgba(214, 36, 92, 0.1)) !important;
+  color: var(--primary, #d6245c) !important;
+}
+
+.toast-icon .icon,
+.toast-icon svg {
+  width: 15px !important;
+  height: 15px !important;
+  color: currentColor !important;
+}
+
+.toast-text {
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+
+.toast-close {
+  width: 24px !important;
+  height: 24px !important;
+  min-height: 24px !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 6px !important;
+  background: transparent !important;
+  color: var(--muted, #626572) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  flex-shrink: 0 !important;
+  transition: background-color 150ms ease, color 150ms ease !important;
+}
+
+.toast-close:hover {
+  background: var(--surface-hover, #f2f4f1) !important;
+  color: var(--heading, #15161c) !important;
+}
+
+.toast-close .icon,
+.toast-close svg {
+  width: 14px !important;
+  height: 14px !important;
+  color: currentColor !important;
+}
+
+.toast-info {
+  background: var(--surface-raised, #ffffff) !important;
+  border-color: var(--border, #d9dcd8) !important;
+  color: var(--heading, #15161c) !important;
+}
+
+.toast-info .toast-icon {
+  background: var(--info-bg, #e0f2fe) !important;
+  color: var(--info, #0284c7) !important;
+}
+
+.toast[data-toast-key="theme"] .toast-icon {
+  background: var(--primary-light, rgba(214, 36, 92, 0.1)) !important;
+  color: var(--primary, #d6245c) !important;
+}
+
+.toast-success {
+  background: #f5fbf6 !important;
+  border-color: var(--success-border, #bbf7d0) !important;
+  color: #14532d !important;
+}
+
+.toast-success .toast-icon {
+  background: rgba(21, 128, 61, 0.12) !important;
+  color: var(--success, #15803d) !important;
+}
+
+.toast-error {
+  background: #fef5f5 !important;
+  border-color: var(--danger-border, #fca5a5) !important;
+  color: #7f1d1d !important;
+}
+
+.toast-error .toast-icon {
+  background: rgba(185, 28, 28, 0.12) !important;
+  color: var(--danger, #b91c1c) !important;
+}
+
+/* Dark Mode Toasts */
+[data-theme="dark"] .toast {
+  background: rgba(27, 29, 38, 0.96) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  color: #f1f3f5 !important;
+  border: 1px solid rgba(255, 255, 255, 0.11) !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.58) !important;
+}
+
+[data-theme="dark"] .toast-close {
+  color: #8b90a0 !important;
+}
+
+[data-theme="dark"] .toast-close:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #f1f3f5 !important;
+}
+
+[data-theme="dark"] .toast-info {
+  background: rgba(27, 29, 38, 0.96) !important;
+  border-color: rgba(56, 189, 248, 0.28) !important;
+  color: #f1f3f5 !important;
+}
+
+[data-theme="dark"] .toast-info .toast-icon {
+  background: rgba(56, 189, 248, 0.16) !important;
+  color: #38bdf8 !important;
+}
+
+[data-theme="dark"] .toast[data-toast-key="theme"] {
+  border-color: rgba(251, 191, 36, 0.28) !important;
+}
+
+[data-theme="dark"] .toast[data-toast-key="theme"] .toast-icon {
+  background: rgba(251, 191, 36, 0.16) !important;
+  color: #fbbf24 !important;
+}
+
+[data-theme="dark"] .toast-success {
+  background: rgba(19, 34, 27, 0.96) !important;
+  border-color: rgba(34, 197, 94, 0.34) !important;
+  color: #ecfdf5 !important;
+}
+
+[data-theme="dark"] .toast-success .toast-icon {
+  background: rgba(34, 197, 94, 0.18) !important;
+  color: #4ade80 !important;
+}
+
+[data-theme="dark"] .toast-error {
+  background: rgba(38, 20, 24, 0.96) !important;
+  border-color: rgba(239, 68, 68, 0.38) !important;
+  color: #fef2f2 !important;
+}
+
+[data-theme="dark"] .toast-error .toast-icon {
+  background: rgba(239, 68, 68, 0.2) !important;
+  color: #f87171 !important;
+}
+
+/* Dark Mode Notification Dropdown & Icon Contrast */
+[data-theme="dark"] .notif-dropdown {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.65) !important;
+}
+
+[data-theme="dark"] .notif-item-icon {
+  filter: brightness(1.22) saturate(1.1);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .notif-mark-single-btn {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+  color: var(--muted) !important;
+}
+
+[data-theme="dark"] .notif-mark-single-btn:hover {
+  background: var(--accent-surface) !important;
+  border-color: var(--accent-border) !important;
+  color: var(--primary) !important;
+}
+
+[data-theme="dark"] .notif-load-more-wrap {
+  background: var(--surface) !important;
+  border-top-color: var(--divider, var(--border)) !important;
+}
+
+[data-theme="dark"] .notif-load-more-btn {
+  background: var(--surface-raised) !important;
+  border-color: var(--border) !important;
+  color: var(--heading) !important;
+}
+
+[data-theme="dark"] .notif-load-more-btn:hover:not(:disabled) {
+  background: var(--accent-surface) !important;
+  border-color: var(--accent-border) !important;
+  color: var(--primary) !important;
+}
+
