@@ -33,6 +33,18 @@
       width: 940px;
       max-width: 100%;
       min-height: 620px;
+      animation: authEntrance 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes authEntrance {
+      0% {
+        opacity: 0;
+        transform: translateY(22px) scale(0.985);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
     }
 
     [data-theme="dark"] .auth-slider-container {
@@ -45,13 +57,22 @@
       position: absolute;
       top: 0;
       height: 100%;
-      transition: all 0.6s ease-in-out;
+      transition: all 0.6s cubic-bezier(0.65, 0, 0.35, 1);
     }
 
     .auth-slider-container .sign-in-container {
       left: 0;
       width: 50%;
       z-index: 2;
+    }
+
+    .auth-slider-container:not(.active) .sign-in-container {
+      animation: dmAuthShowSignIn 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+
+    @keyframes dmAuthShowSignIn {
+      0%, 49.99% { opacity: 0; z-index: 1; }
+      50%, 100% { opacity: 1; z-index: 2; }
     }
 
     .auth-slider-container .sign-up-container {
@@ -73,7 +94,7 @@
       opacity: 1;
       z-index: 5;
       pointer-events: auto;
-      animation: dmAuthShow 0.6s;
+      animation: dmAuthShow 0.6s cubic-bezier(0.65, 0, 0.35, 1);
     }
 
     @keyframes dmAuthShow {
@@ -247,7 +268,7 @@
       width: 50%;
       height: 100%;
       overflow: hidden;
-      transition: transform 0.6s ease-in-out;
+      transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
       z-index: 100;
     }
 
@@ -263,7 +284,7 @@
       height: 100%;
       width: 200%;
       transform: translateX(0);
-      transition: transform 0.6s ease-in-out;
+      transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
     }
 
     .auth-slider-container .overlay::before {
@@ -290,7 +311,7 @@
       top: 0;
       height: 100%;
       width: 50%;
-      transition: transform 0.6s ease-in-out;
+      transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
       z-index: 2;
     }
 
@@ -325,6 +346,16 @@
       margin-bottom: 18px;
       box-shadow: 0 10px 26px rgba(214, 36, 92, 0.42);
       transform: rotate(-12deg);
+      animation: floatPinBadge 3.6s ease-in-out infinite !important;
+    }
+
+    @keyframes floatPinBadge {
+      0%, 100% {
+        transform: translateY(0px) rotate(-12deg);
+      }
+      50% {
+        transform: translateY(-8px) rotate(-7deg);
+      }
     }
 
     .overlay-pin-badge span {
@@ -359,15 +390,17 @@
       font-size: 13px;
       font-weight: 700;
       letter-spacing: 0.4px;
-      transition: background-color 150ms ease, transform 120ms ease;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
 
     .ghost-btn:hover {
-      background-color: rgba(255, 255, 255, 0.14);
+      background-color: rgba(255, 255, 255, 0.22) !important;
+      transform: translateY(-2px) scale(1.03) !important;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28) !important;
     }
 
     .ghost-btn:active {
-      transform: scale(0.96);
+      transform: scale(0.96) !important;
     }
 
     .mobile-auth-switch {
