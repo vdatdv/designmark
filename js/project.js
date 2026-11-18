@@ -732,7 +732,7 @@ async function renderScreens(panel, project) {
   let viewMode = localStorage.getItem('dm_screens_view_mode') || 'grid'; // 'grid' | 'list'
 
   let screensPage = parseInt(urlParams.get('page') || '1', 10);
-  const screensLimit = 10;
+  const screensLimit = 6;
   if (isNaN(screensPage) || screensPage < 1) screensPage = 1;
 
   function updateUrlState() {
@@ -1653,7 +1653,7 @@ async function renderMembers(panel, project) {
     type: 'search',
     class: 'field-input member-search-input',
     placeholder: 'Tìm theo tên, @username...',
-    style: 'padding-left: 32px; height: 38px; width: 210px; font-size: 13.5px;'
+    'aria-label': 'Tìm kiếm thành viên'
   });
   memberSearchInput.addEventListener('input', () => {
     clearTimeout(searchDebounceTimer);
@@ -1663,8 +1663,8 @@ async function renderMembers(panel, project) {
       updateMemberTable();
     }, 250);
   });
-  const memberSearchWrap = el('div', { style: 'position: relative; display: inline-flex; align-items: center;' }, [
-    el('span', { style: 'position: absolute; left: 10px; color: var(--muted); pointer-events: none; display: flex;' }, [icon('search')]),
+  const memberSearchWrap = el('div', { class: 'member-search-wrap' }, [
+    icon('search'),
     memberSearchInput
   ]);
 

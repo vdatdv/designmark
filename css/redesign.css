@@ -3099,7 +3099,7 @@ select.projects-toolbar-select {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 12px;
-  padding: 14px 16px;
+  padding: 12px 18px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-top: none;
@@ -3112,8 +3112,16 @@ select.projects-toolbar-select {
   margin-top: 16px !important;
 }
 
-.pagination-bar.is-centered {
+/* Khi phân trang căn giữa (dành cho Grid dự án, màn hình, accordion góp ý) */
+.pagination-bar.is-centered,
+.pagination-bar.is-centered.is-standalone {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 24px 0 12px 0 !important;
+  margin-top: 8px !important;
   justify-content: center !important;
+  width: 100% !important;
 }
 
 .pagination-bar.is-centered .pagination-controls {
@@ -3130,53 +3138,72 @@ select.projects-toolbar-select {
 }
 
 .pagination-size-select {
-  height: 32px;
-  padding: 0 8px;
+  height: 34px;
+  padding: 0 10px;
   font-size: 13px;
   border-radius: 6px;
   border: 1px solid var(--border);
   background: var(--surface-raised);
-  color: var(--text);
+  color: var(--heading);
   cursor: pointer;
+  transition: border-color var(--transition);
+}
+
+.pagination-size-select:focus {
+  border-color: var(--primary);
+  outline: none;
 }
 
 .pagination-controls {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   flex-wrap: wrap;
+  user-select: none;
 }
 
 .pagination-ellipsis {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0 4px;
+  min-width: 28px;
+  height: 36px;
   color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
   user-select: none;
 }
 
 .pagination-btn {
-  height: 32px;
-  min-width: 32px;
-  padding: 0 10px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text);
-  font-size: 13px;
-  font-weight: 500;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.15s ease;
+  height: 36px !important;
+  min-width: 36px !important;
+  padding: 0 12px !important;
+  border-radius: 8px !important;
+  border: 1px solid var(--border) !important;
+  background: var(--surface) !important;
+  color: var(--heading) !important;
+  font-family: var(--font) !important;
+  font-size: 13.5px !important;
+  font-weight: 500 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.16s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+  user-select: none !important;
 }
 
 .pagination-btn:hover:not(:disabled) {
-  border-color: var(--primary);
-  color: var(--primary);
-  background: var(--surface-raised);
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+  background: var(--surface-raised) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08) !important;
+}
+
+.pagination-btn:active:not(:disabled) {
+  transform: translateY(0) !important;
 }
 
 .pagination-btn.is-active {
@@ -3186,18 +3213,32 @@ select.projects-toolbar-select {
   font-weight: 600 !important;
   opacity: 1 !important;
   cursor: default !important;
-  box-shadow: 0 1px 3px rgba(79, 70, 229, 0.35) !important;
+  box-shadow: 0 2px 8px rgba(225, 29, 72, 0.35) !important;
+  transform: none !important;
 }
 
 .pagination-btn.is-active:hover {
   background: var(--primary) !important;
   color: #ffffff !important;
   border-color: var(--primary) !important;
+  transform: none !important;
 }
 
 .pagination-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+  opacity: 0.38 !important;
+  background: var(--surface-subtle, #f8fafc) !important;
+  border-color: var(--border, #e2e8f0) !important;
+  color: var(--muted) !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  transform: none !important;
+  pointer-events: none !important;
+}
+
+.pagination-prev,
+.pagination-next {
+  padding: 0 14px !important;
+  font-weight: 500 !important;
 }
 
 @media (max-width: 640px) {
@@ -6550,6 +6591,50 @@ select.projects-toolbar-select {
   flex-shrink: 0;
 }
 
+/* Member Search Input in Project Detail (Tab Thành viên) */
+.member-search-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.member-search-wrap .icon {
+  position: absolute !important;
+  left: 12px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 15px !important;
+  height: 15px !important;
+  color: var(--muted) !important;
+  pointer-events: none !important;
+  z-index: 2 !important;
+}
+
+.member-search-input {
+  width: 250px !important;
+  height: 38px !important;
+  min-height: 38px !important;
+  padding: 0 14px 0 36px !important;
+  font-size: 13.5px !important;
+  border-radius: var(--radius-input) !important;
+  border: 1px solid var(--border) !important;
+  background: var(--surface) !important;
+  color: var(--heading) !important;
+  transition: all 0.18s ease !important;
+  box-sizing: border-box !important;
+}
+
+.member-search-input:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px var(--primary-ring) !important;
+  background: var(--surface-raised) !important;
+}
+
+.member-search-input::placeholder {
+  color: var(--muted) !important;
+  opacity: 0.8 !important;
+}
+
 /* 9. Role Permissions Accordion in Members Tab (Được đưa lên đầu tab Thành viên) */
 .role-guide-accordion {
   background: var(--surface);
@@ -7853,51 +7938,6 @@ select.projects-toolbar-select {
   gap: 4px;
   flex-wrap: wrap;
   justify-content: center;
-}
-
-.pagination-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 30px;
-  min-width: 30px;
-  padding: 0 8px;
-  border-radius: 6px;
-  border: 1px solid var(--border, #e2e8f0);
-  background: var(--surface, #ffffff);
-  color: var(--text, #334155);
-  font-size: 13px;
-  font-weight: 500;
-  font-family: inherit;
-  cursor: pointer;
-  user-select: none;
-  transition: all 0.15s ease;
-}
-
-.pagination-btn:hover:not(:disabled) {
-  background: var(--surface-hover, #f8fafc);
-  border-color: #cbd5e1;
-  color: var(--heading, #0f172a);
-}
-
-.pagination-btn.is-active {
-  background: var(--primary, #D6245C) !important;
-  border-color: var(--primary, #D6245C) !important;
-  color: #ffffff !important;
-  font-weight: 600;
-}
-
-.pagination-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
-.pagination-ellipsis {
-  padding: 0 4px;
-  color: var(--muted, #94a3b8);
-  font-size: 13px;
-  user-select: none;
 }
 
 /* Dark mode for filter grid & pagination */

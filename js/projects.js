@@ -635,7 +635,7 @@ boot({
     let sortMode = urlParams.get('sort') || 'updated-desc';
     let viewMode = localStorage.getItem('designmark.projects_view_mode') || 'grid';
     let currentPage = parseInt(urlParams.get('page') || '1', 10);
-    let currentLimit = parseInt(urlParams.get('limit') || (viewMode === 'grid' ? '12' : '10'), 10);
+    const currentLimit = 8;
 
     function updateUrlState() {
       const url = new URL(location.href);
@@ -674,12 +674,7 @@ boot({
       } else {
         url.searchParams.delete('sort');
       }
-      const defaultLimit = viewMode === 'grid' ? 12 : 10;
-      if (currentLimit !== defaultLimit) {
-        url.searchParams.set('limit', String(currentLimit));
-      } else {
-        url.searchParams.delete('limit');
-      }
+      url.searchParams.delete('limit');
       history.replaceState(null, '', url.toString());
     }
 
@@ -961,7 +956,6 @@ boot({
         onclick: () => {
           if (viewMode === 'grid') return;
           viewMode = 'grid';
-          currentLimit = 12;
           currentPage = 1;
           localStorage.setItem('designmark.projects_view_mode', 'grid');
           gridBtn.classList.add('is-active');
@@ -979,7 +973,6 @@ boot({
         onclick: () => {
           if (viewMode === 'list') return;
           viewMode = 'list';
-          currentLimit = 10;
           currentPage = 1;
           localStorage.setItem('designmark.projects_view_mode', 'list');
           listBtn.classList.add('is-active');
@@ -1239,20 +1232,16 @@ boot({
           currentPage,
           pageSize: currentLimit,
           totalItems,
-          pageSizeOptions: viewMode === 'grid' ? [12, 24, 48] : [10, 20, 50, 100],
-          itemLabel: 'dự án',
-          isStandalone: viewMode === 'grid',
+          showPageSizeSelect: false,
+          showInfo: false,
+          isCentered: true,
+          alwaysShow: true,
+          isStandalone: true,
           onPageChange: (newPage) => {
             currentPage = newPage;
             updateUrlState();
             renderGridContainer();
             window.scrollTo({ top: 0, behavior: 'smooth' });
-          },
-          onPageSizeChange: (newLimit) => {
-            currentLimit = newLimit;
-            currentPage = 1;
-            updateUrlState();
-            renderGridContainer();
           }
         });
 

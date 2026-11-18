@@ -13,7 +13,7 @@ let statusFilter = 'all'; // 'all' | 'open' | 'in_progress' | 'resolved' | 'mine
 let innerSearch = '';
 const screenVersionSelection = {}; // screenId -> versionId or 'all'
 let projectPage = 1;
-let projectPageSize = 10;
+let projectPageSize = 15;
 const screenFeedbackPage = {};
 const screenFeedbackLimit = {};
 
@@ -364,18 +364,15 @@ export function renderFeedbackPage(pageContainer) {
       currentPage: projectPage,
       pageSize: projectPageSize,
       totalItems: totalProjects,
-      pageSizeOptions: [10, 20, 50, 100],
-      itemLabel: 'dự án',
+      showPageSizeSelect: false,
+      showInfo: false,
+      isCentered: true,
+      alwaysShow: true,
       isStandalone: true,
       onPageChange: (newPage) => {
         projectPage = newPage;
         renderAccordionItems();
         accordionContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      },
-      onPageSizeChange: (newSize) => {
-        projectPageSize = newSize;
-        projectPage = 1;
-        renderAccordionItems();
       }
     });
 
