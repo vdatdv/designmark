@@ -551,7 +551,13 @@ function renderProjectHeader(project, onOpenMembersTab, onUploadScreen) {
   }
 
   // Member avatar pile
-  const members = project.members || [];
+  const members = (project.members || []).slice().sort((a, b) => {
+    const aOwner = (a.id === project.createdBy || a.role === 'owner');
+    const bOwner = (b.id === project.createdBy || b.role === 'owner');
+    if (aOwner && !bOwner) return -1;
+    if (!aOwner && bOwner) return 1;
+    return 0;
+  });
   const avatarStackEls = members.slice(0, 3).map((m) => {
     const av = avatarEl(m, 22);
     av.title = `${m.name} (@${m.username})`;
@@ -1580,10 +1586,24 @@ async function renderMembers(panel, project) {
       ]));
 
       const body = el('tbody');
-      pageMembers.forEach((member) => {
-        const roleCell = canManage ? roleSelect(project, member, panel) : roleBadge(member.role);
-        const isOwner = member.id === project.createdBy;
+      // Sắp xếp: Chủ dự án luôn luôn hiển thị ở vị trí đầu tiên
+      const sortedMembers = [...pageMembers].sort((a, b) => {
+        const aOwner = (a.id === project.createdBy || a.role === 'owner');
+        const bOwner = (b.id === project.createdBy || b.role === 'owner');
+        if (aOwner && !bOwner) return -1;
+        if (!aOwner && bOwner) return 1;
+        return 0;
+      });
+
+      sortedMembers.forEach((member) => {
+        const isOwner = (member.id === project.createdBy || member.role === 'owner');
         const isSelf = window.DESIGNMARK_SESSION && window.DESIGNMARK_SESSION.userId === member.id;
+
+        // Chủ dự án luôn mặc định là Quản lý
+        const memberRole = isOwner ? 'manager' : member.role;
+
+        // Chủ dự án không có ô thay đổi vai trò (hiển thị badge cố định Quản lý)
+        const roleCell = (canManage && !isOwner) ? roleSelect(project, member, panel) : roleBadge(memberRole);
 
         const actionCell = canManage ? el('td', {}, [
           (!isOwner && !isSelf) ? el('button', {
@@ -1785,6 +1805,9 @@ function renderRolePermissionsAccordion() {
 }
 
 function roleSelect(project, member, panel) {
+  if (member.id === project.createdBy || member.role === 'owner') {
+    return roleBadge('manager');
+  }
   const select = el('select', { class: 'field-input', 'aria-label': `Vai trò của ${member.name}` }, [
     el('option', { value: 'viewer', text: 'Chỉ xem' }),
     el('option', { value: 'reviewer', text: 'Góp ý' }),

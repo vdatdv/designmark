@@ -14,3 +14,4 @@ data/*.sqlite-shm
 # IDE & Assistant config
 .agents/
 skills-lock.json
+bao_cao_btl/

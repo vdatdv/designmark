@@ -975,9 +975,18 @@ function summarize_project(PDO $pdo, $proj, $userId) {
     $annStats = $stmtAnn->fetch();
 
     // Members
-    $stmtMem = $pdo->prepare("SELECT u.id, u.name, u.username, u.email, pm.role, u.color, u.title, pm.id as membership_id, pm.created_at FROM project_members pm JOIN users u ON pm.user_id = u.id WHERE pm.project_id = :pid");
-    $stmtMem->execute([':pid' => $proj['id']]);
+    $stmtMem = $pdo->prepare("SELECT u.id, u.name, u.username, u.email, pm.role, u.color, u.title, pm.id as membership_id, pm.created_at FROM project_members pm JOIN users u ON pm.user_id = u.id WHERE pm.project_id = :pid ORDER BY CASE WHEN u.id = :ownerId THEN 0 ELSE 1 END, pm.created_at ASC");
+    $stmtMem->execute([':pid' => $proj['id'], ':ownerId' => $proj['created_by']]);
     $members = $stmtMem->fetchAll();
+
+    $ownerFoundInMembers = false;
+    foreach ($members as &$m) {
+        if ($m['id'] === $proj['created_by']) {
+            $m['role'] = 'manager';
+            $ownerFoundInMembers = true;
+        }
+    }
+    unset($m);
 
     $myRole = null;
     foreach ($members as $m) {

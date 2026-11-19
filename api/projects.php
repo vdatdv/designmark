@@ -31,16 +31,27 @@ if ($method === 'GET') {
         }
 
         if ($action === 'members') {
+            $stmtOwner = $pdo->prepare("SELECT created_by FROM projects WHERE id = :pid");
+            $stmtOwner->execute([':pid' => $projectId]);
+            $ownerId = $stmtOwner->fetchColumn();
+
             $q = trim($_GET['q'] ?? '');
             if ($q !== '') {
                 $qLower = '%' . mb_strtolower($q, 'UTF-8') . '%';
-                $stmt = $pdo->prepare("SELECT u.id, u.name, u.username, u.email, pm.role, u.color, u.title, pm.id as \"membershipId\", pm.created_at as \"createdAt\" FROM project_members pm JOIN users u ON pm.user_id = u.id WHERE pm.project_id = :pid AND (LOWER(u.name) LIKE :q OR LOWER(u.username) LIKE :q OR LOWER(COALESCE(u.email, '')) LIKE :q) ORDER BY pm.created_at ASC");
-                $stmt->execute([':pid' => $projectId, ':q' => $qLower]);
+                $stmt = $pdo->prepare("SELECT u.id, u.name, u.username, u.email, pm.role, u.color, u.title, pm.id as \"membershipId\", pm.created_at as \"createdAt\" FROM project_members pm JOIN users u ON pm.user_id = u.id WHERE pm.project_id = :pid AND (LOWER(u.name) LIKE :q OR LOWER(u.username) LIKE :q OR LOWER(COALESCE(u.email, '')) LIKE :q) ORDER BY CASE WHEN u.id = :ownerId THEN 0 ELSE 1 END, pm.created_at ASC");
+                $stmt->execute([':pid' => $projectId, ':q' => $qLower, ':ownerId' => $ownerId]);
             } else {
-                $stmt = $pdo->prepare("SELECT u.id, u.name, u.username, u.email, pm.role, u.color, u.title, pm.id as \"membershipId\", pm.created_at as \"createdAt\" FROM project_members pm JOIN users u ON pm.user_id = u.id WHERE pm.project_id = :pid ORDER BY pm.created_at ASC");
-                $stmt->execute([':pid' => $projectId]);
+                $stmt = $pdo->prepare("SELECT u.id, u.name, u.username, u.email, pm.role, u.color, u.title, pm.id as \"membershipId\", pm.created_at as \"createdAt\" FROM project_members pm JOIN users u ON pm.user_id = u.id WHERE pm.project_id = :pid ORDER BY CASE WHEN u.id = :ownerId THEN 0 ELSE 1 END, pm.created_at ASC");
+                $stmt->execute([':pid' => $projectId, ':ownerId' => $ownerId]);
             }
             $allMembers = $stmt->fetchAll();
+
+            foreach ($allMembers as &$m) {
+                if ($m['id'] === $ownerId) {
+                    $m['role'] = 'manager';
+                }
+            }
+            unset($m);
 
             $isPaginated = isset($_GET['page']) || isset($_GET['paginate']) || isset($_GET['limit']);
             if (!$isPaginated) {
@@ -562,6 +573,13 @@ if ($method === 'POST' || $method === 'DELETE') {
             json_error('Không tìm thấy thành viên trong dự án.', 'NOT_FOUND', 404);
         }
 
+        $stmtProj = $pdo->prepare("SELECT created_by FROM projects WHERE id = :pid");
+        $stmtProj->execute([':pid' => $projectId]);
+        $ownerId = $stmtProj->fetchColumn();
+        if ($userId === $ownerId) {
+            json_error('Không thể thay đổi vai trò của Chủ dự án. Chủ dự án mặc định luôn giữ vai trò Quản lý.', 'VALIDATION', 422);
+        }
+
         if ($member['role'] === 'manager' && $role !== 'manager') {
             $stmtMgrs = $pdo->prepare("SELECT count(*) FROM project_members WHERE project_id = :pid AND role = 'manager'");
             $stmtMgrs->execute([':pid' => $projectId]);
@@ -617,6 +635,13 @@ if ($method === 'POST' || $method === 'DELETE') {
         $member = $stmtCheck->fetch();
         if (!$member) {
             json_error('Không tìm thấy thành viên trong dự án.', 'NOT_FOUND', 404);
+        }
+
+        $stmtProj = $pdo->prepare("SELECT created_by FROM projects WHERE id = :pid");
+        $stmtProj->execute([':pid' => $projectId]);
+        $ownerId = $stmtProj->fetchColumn();
+        if ($userId === $ownerId) {
+            json_error('Không thể xóa Chủ dự án khỏi dự án.', 'VALIDATION', 422);
         }
 
         if ($member['role'] === 'manager') {

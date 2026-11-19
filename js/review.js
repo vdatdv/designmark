@@ -839,21 +839,11 @@ function syncFilterControls() {
 }
 
 function renderPaginationControls() {
-  const container = el('div', { class: 'pagination-container' });
-
-  // Range summary
-  const summary = el('div', { class: 'pagination-summary' });
-  if (pagination.total === 0) {
-    summary.textContent = '0 góp ý';
-  } else {
-    summary.textContent = `Hiển thị ${pagination.start}–${pagination.end} trong tổng số ${pagination.total} góp ý`;
-  }
-  container.append(summary);
-
   if (pagination.totalPages <= 1) {
-    return container;
+    return null;
   }
 
+  const container = el('div', { class: 'pagination-container' });
   const nav = el('nav', { class: 'pagination-nav', 'aria-label': 'Phân trang góp ý' });
 
   // Prev button
@@ -949,14 +939,24 @@ function renderThreads() {
       title: hasFilter ? 'Không tìm thấy góp ý nào' : 'Chưa có góp ý trên phiên bản này',
       text: hasFilter ? 'Thử xóa bớt bộ lọc hoặc thay đổi từ khóa tìm kiếm.' : 'Đặt điểm hoặc khoanh vùng trên ảnh để bắt đầu.'
     }));
-    if (paginationBox) paginationBox.replaceChildren();
+    if (paginationBox) {
+      paginationBox.replaceChildren();
+      paginationBox.hidden = true;
+    }
     return;
   }
 
   annotations.forEach((ann) => list.append(renderThread(ann)));
 
   if (paginationBox) {
-    paginationBox.replaceChildren(renderPaginationControls());
+    const controls = renderPaginationControls();
+    if (controls) {
+      paginationBox.replaceChildren(controls);
+      paginationBox.hidden = false;
+    } else {
+      paginationBox.replaceChildren();
+      paginationBox.hidden = true;
+    }
   }
 }
 

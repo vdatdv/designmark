@@ -7916,11 +7916,10 @@ select.projects-toolbar-select {
 /* Numbered Pagination */
 .pagination-container {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 8px;
-  margin-top: 14px;
-  padding: 12px 14px;
+  justify-content: center;
+  margin-top: 10px;
+  padding: 10px 14px;
   border-top: 1px solid var(--border, #e2e8f0);
   background: var(--surface, #ffffff);
 }
